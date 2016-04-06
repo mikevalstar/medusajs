@@ -27,9 +27,9 @@ describe('basic storage', () => {
 
   pit('gets the results of a promise', () => {
 
-    return Medusa.get('sample1', new Promise(function(resolve, reject) {
+    return Medusa.get('sample1', function(resolve, reject) {
       resolve('success');
-    }), 1000)
+    }, 1000)
     .then(res => expect(res).toEqual('success'));
 
   });
@@ -38,15 +38,15 @@ describe('basic storage', () => {
 
     return new Promise(resolve => {
 
-      Medusa.get('sample2', new Promise(function(resolve, reject) {
+      Medusa.get('sample2', function(resolve, reject) {
         resolve('success');
-      }), 1000)
+      }, 1000)
       .then(res => expect(res).toEqual('success'))
       .then(res => {
 
-        Medusa.get('sample2', new Promise(function(resolve, reject) {
+        Medusa.get('sample2', function(resolve, reject) {
           resolve('failure');
-        }), 1000)
+        }, 1000)
         .then(res => {
           expect(res).toEqual('success');
           resolve();
@@ -62,9 +62,9 @@ describe('basic storage', () => {
 
     return new Promise(resolve => {
 
-      Medusa.get('sample3', new Promise(function(resolve, reject) {
+      Medusa.get('sample3', function(resolve, reject) {
         resolve('failure');
-      }), 1000)
+      }, 1000)
       .then(res => expect(res).toEqual('failure'))
       .then(res => {
 
@@ -74,9 +74,9 @@ describe('basic storage', () => {
       })
       .then(res => {
 
-        Medusa.get('sample3', new Promise(function(resolve, reject) {
+        Medusa.get('sample3', function(resolve, reject) {
           resolve('success');
-        }), 1000)
+        }, 1000)
         .then(res => {
           expect(res).toEqual('success');
           resolve();
@@ -92,16 +92,16 @@ describe('basic storage', () => {
 
     return new Promise(resolve => {
 
-      Medusa.get('sample4', new Promise(function(resolve, reject) {
+      Medusa.get('sample4', function(resolve, reject) {
         reject('failure');
-      }), 1000)
+      }, 1000)
       .catch(err => {
 
         expect(err).toEqual('failure');
 
-        Medusa.get('sample4', new Promise(function(resolve, reject) {
+        Medusa.get('sample4', function(resolve, reject) {
           resolve('success');
-        }), 1000)
+        }, 1000)
         .then(res => {
           expect(res).toEqual('success');
           resolve();
@@ -117,15 +117,15 @@ describe('basic storage', () => {
 
     return new Promise(resolve => {
 
-      Medusa.get('sample5', new Promise(function(resolve, reject) {
+      Medusa.get('sample5', function(resolve, reject) {
         resolve('failure');
-      }), 1000)
+      }, 1000)
       .then(() => Medusa.clear())
       .then(res => {
 
-        Medusa.get('sample5', new Promise(function(resolve, reject) {
+        Medusa.get('sample5', function(resolve, reject) {
           resolve('success');
-        }), 1000)
+        }, 1000)
         .then(res => {
           expect(res).toEqual('success');
           resolve();

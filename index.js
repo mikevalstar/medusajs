@@ -36,12 +36,11 @@ var Medusa = (function() {
 
         } else {
           // The cached item does not exist, resolve and return
-          prom.then((v) => {
+          let resolveExt = (v) => {
             md.put(key, v, policy);
             resolve(v);
-          }).catch((e) => {
-            reject(e);
-          });
+          };
+          prom(resolveExt, reject)
 
         }
 
