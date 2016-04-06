@@ -1,0 +1,5 @@
+{
+  "esnext": true,
+  "preset": "node-style-guide",
+  "maximumLineLength": 160,
+}
