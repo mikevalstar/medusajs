@@ -67,3 +67,4 @@ _You may also clear cache items using a wildcard characters e.g. Medusa.clear('s
 Send in an updated settings object:
 
 * debug: _will output logging_
+* returnMutator: _a function to mutate the return value for output (good for using something like _.cloneDeep)_

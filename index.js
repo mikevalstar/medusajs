@@ -6,6 +6,7 @@ var Medusa = (function() {
   var hOP = cache.hasOwnProperty;
   var settings = {
     debug: false,
+    returnMutator: false,
   };
 
   var md = {
@@ -16,11 +17,7 @@ var Medusa = (function() {
         return settings;
       }
 
-      for (var i in newSettings) {
-        if (newSettings.hasOwnProperty(i)) {
-          settings[i] = newSettings[i];
-        }
-      }
+      Object.assign(settings, newSettings);
 
       return settings;
     },
@@ -32,12 +29,19 @@ var Medusa = (function() {
 
         if (hOP.call(cache, key)) {
           // The cached item exists, return it immediatly
-          resolve(cache[key].val);
+          if (settings.returnMutator) {
+            resolve(settings.returnMutator(cache[key].val));
+          } else {
+            resolve(cache[key].val);
+          }
 
         } else {
           // The cached item does not exist, resolve and return
           let resolveExt = (v) => {
             md.put(key, v, policy);
+            if (settings.returnMutator) {
+              v = settings.returnMutator(v);
+            }
             resolve(v);
           };
           prom(resolveExt, reject)
