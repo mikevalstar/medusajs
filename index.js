@@ -78,13 +78,29 @@ var Medusa = (function() {
       if (!key) {
         for (var i in cache) {
           if (hOP.call(cache, i)) {
-            clearTimeout(cache[i].to);
-            delete cache[i];
+            md._clear(i);
           }
         }
-        return;
+        return true;
       }
 
+      // Clear a wildcard search of objects
+      if (key.indexOf('*') > -1) {
+        var cacheMatchKeys = Object.keys(cache).filter((str) => {
+          return new RegExp('^' + key.split('*').join('.*') + '$').test(str);
+        });
+        cacheMatchKeys.forEach(md._clear);
+        // Incase someone somehow used a wildcard in their cached key (don't do this)
+        return cacheMatchKeys.length > 0 || md._clear(key);
+      }
+
+      // Not a special clear
+      return md._clear(key);
+
+    },
+
+    // Internal clear to bypass extra checking of the key
+    _clear(key) {
       // Clear a single item, making sure to remove the extra timeout
       if (hOP.call(cache, key)) {
         if (cache[key].to) {
@@ -92,8 +108,10 @@ var Medusa = (function() {
         }
 
         delete cache[key];
+        return true;
       }
 
+      return false;
     },
 
   };
