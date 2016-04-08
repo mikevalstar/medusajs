@@ -52,6 +52,15 @@ _rejected promises are not cached._
 
 The policy value will set the duration of the cache, if no policy is set the object will be cache until cleared manually.
 
+### overwrite = function(key, promise, policy)
+
+The function will resolve the value for the promise and store that result in place of the current object.
+The original object will be available while the promise resolves.
+
+_rejected promises are not cached._
+
+The policy value will set the duration of the cache, if no policy is set the object will be cache until cleared manually.
+
 ### put = function(key, value, policy)
 
 Bypass the get function and store an object directly into the cache.

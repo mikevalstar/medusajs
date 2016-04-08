@@ -58,6 +58,30 @@ describe('basic storage', () => {
 
   });
 
+  pit('overwtires the current cache item', () => {
+
+    return new Promise(resolve => {
+
+      Medusa.get('sample6', function(resolve, reject) {
+        resolve('success');
+      }, 1000)
+      .then(res => expect(res).toEqual('success'))
+      .then(res => {
+
+        Medusa.overwrite('sample6', function(resolve, reject) {
+          resolve('success2');
+        }, 1000)
+        .then(res => {
+          expect(res).toEqual('success2');
+          resolve();
+        });
+
+      });
+
+    });
+
+  });
+
   pit('cache expires', () => {
 
     return new Promise(resolve => {
@@ -126,6 +150,30 @@ describe('basic storage', () => {
         Medusa.get('sample5', function(resolve, reject) {
           resolve('success');
         }, 1000)
+        .then(res => {
+          expect(res).toEqual('success');
+          resolve();
+        });
+
+      });
+
+    });
+
+  });
+
+  pit('clears a single item that has a permenant cache', () => {
+
+    return new Promise(resolve => {
+
+      Medusa.get('sample7', function(resolve, reject) {
+        resolve('failure');
+      })
+      .then(() => Medusa.clear('sample7'))
+      .then(res => {
+
+        Medusa.get('sample7', function(resolve, reject) {
+          resolve('success');
+        })
         .then(res => {
           expect(res).toEqual('success');
           resolve();

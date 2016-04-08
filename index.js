@@ -52,6 +52,25 @@ var Medusa = (function() {
 
     },
 
+    // Allows you to get from the cache or pull from the promise
+    overwrite: function(key, prom, policy) {
+
+      return new Promise(function(resolve, reject) {
+
+        // Re-put the object no matter what
+        let resolveExt = (v) => {
+          md.put(key, v, policy);
+          if (settings.returnMutator) {
+            v = settings.returnMutator(v);
+          }
+          resolve(v);
+        };
+        prom(resolveExt, reject)
+
+      });
+
+    },
+
     // Place an item into the cache
     put: function(key, value, policy) {
 

@@ -11,17 +11,37 @@ describe('object mutation', () => {
       returnMutator: cloneDeep,
     });
 
-    return Medusa.get('sample1', function(resolve, reject) {
+    return Medusa.get('mutate1', function(resolve, reject) {
       resolve({x: {v: 'success'}});
     }, 1000)
     .then(res => expect(res.x.v).toEqual('success'))
     .then(res => {
-      return Medusa.get('sample1', function(resolve, reject) {
+      return Medusa.get('mutate1', function(resolve, reject) {
         resolve('failure');
       }, 1000)
       .then(res => expect(res.x.v).toEqual('success'))
     });
 
   });
+
+  pit('adds a mutator then uses it on overwrite', () => {
+
+    Medusa.settings({
+      returnMutator: cloneDeep,
+    });
+
+    return Medusa.get('mutate2', function(resolve, reject) {
+      resolve({x: {v: 'success'}});
+    }, 1000)
+    .then(res => expect(res.x.v).toEqual('success'))
+    .then(res => {
+      return Medusa.overwrite('mutate2', function(resolve, reject) {
+        resolve({x: {v: 'success2'}});
+      }, 1000)
+      .then(res => expect(res.x.v).toEqual('success2'))
+    });
+
+  });
+
 
 });
