@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Medusajs by mikevalstar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Medusajs</h1>
+      <h2 class="project-tagline">Medusa JS is a Promise based caching library</h2>
+      <a href="https://github.com/mikevalstar/medusajs" class="btn">View on GitHub</a>
+      <a href="https://github.com/mikevalstar/medusajs/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/mikevalstar/medusajs/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="medusajs" class="anchor" href="#medusajs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>MedusaJS</h1>
+
+<p>A Promise based caching library for node or the browser.</p>
+
+<p>Pass in a cache key, a promise executor and optionally a cache length and get back a cached object.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<pre><code>npm install medusajs
+</code></pre>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> Medusa <span class="pl-k">=</span> <span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>medusajs<span class="pl-pds">'</span></span>);
+
+<span class="pl-k">function</span> <span class="pl-en">ex</span>() {
+  <span class="pl-k">return</span> <span class="pl-smi">Medusa</span>.<span class="pl-en">get</span>(<span class="pl-s"><span class="pl-pds">'</span>sample<span class="pl-pds">'</span></span>, <span class="pl-k">function</span>(<span class="pl-smi">resolve</span>, <span class="pl-smi">reject</span>) {
+    <span class="pl-en">console</span>.<span class="pl-c1">log</span>(<span class="pl-s"><span class="pl-pds">'</span>cache miss<span class="pl-pds">'</span></span>);
+    <span class="pl-en">resolve</span>(<span class="pl-s"><span class="pl-pds">'</span>example<span class="pl-pds">'</span></span>);
+  }, <span class="pl-c1">1000</span>);
+}
+
+
+<span class="pl-en">ex</span>().<span class="pl-en">then</span>(<span class="pl-smi">res</span> <span class="pl-k">=&gt;</span> {
+  <span class="pl-en">console</span>.<span class="pl-c1">log</span>(res);
+});
+
+<span class="pl-en">ex</span>().<span class="pl-en">then</span>(<span class="pl-smi">res</span> <span class="pl-k">=&gt;</span> {
+  <span class="pl-en">console</span>.<span class="pl-c1">log</span>(res);
+});
+
+<span class="pl-en">ex</span>().<span class="pl-en">then</span>(<span class="pl-smi">res</span> <span class="pl-k">=&gt;</span> {
+  <span class="pl-en">console</span>.<span class="pl-c1">log</span>(res);
+});
+
+<span class="pl-c">/* returns:</span>
+<span class="pl-c">cache miss</span>
+<span class="pl-c">example</span>
+<span class="pl-c">example</span>
+<span class="pl-c">example */</span>
+</pre></div>
+
+<h2>
+<a id="api" class="anchor" href="#api" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>API</h2>
+
+<h3>
+<a id="get--functionkey-promise-policy" class="anchor" href="#get--functionkey-promise-policy" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>get = function(key, promise, policy)</h3>
+
+<p>The function will lookup and resolve the value for the previously resolved promise,
+if no entry is in the cache the function will resolve the promise and resolve that.</p>
+
+<p><em>rejected promises are not cached.</em></p>
+
+<p>The policy value will set the duration of the cache, if no policy is set the object will be cache until cleared manually.</p>
+
+<h3>
+<a id="put--functionkey-value-policy" class="anchor" href="#put--functionkey-value-policy" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>put = function(key, value, policy)</h3>
+
+<p>Bypass the get function and store an object directly into the cache.</p>
+
+<h3>
+<a id="clear--functionkey" class="anchor" href="#clear--functionkey" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>clear = function(key)</h3>
+
+<p>Clear a cached item, if no key is set all items will be cleared. Returns true if an item was cleared.</p>
+
+<p><em>You may also clear cache items using a wildcard characters e.g. Medusa.clear('sample*')</em></p>
+
+<h3>
+<a id="settings--functionnewsettings" class="anchor" href="#settings--functionnewsettings" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>settings = function(newSettings)</h3>
+
+<p>Send in an updated settings object:</p>
+
+<ul>
+<li>debug: <em>will output logging</em>
+</li>
+<li>returnMutator: <em>a function to mutate the return value for output (good for using something like lodash.cloneDeep)</em>
+</li>
+</ul>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/mikevalstar/medusajs">Medusajs</a> is maintained by <a href="https://github.com/mikevalstar">mikevalstar</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
