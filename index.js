@@ -37,14 +37,14 @@ var Medusa = (function() {
 
         } else {
           // The cached item does not exist, resolve and return
-          let resolveExt = (v) => {
+          var resolveExt = (v) => {
             md.put(key, v, policy);
             if (settings.returnMutator) {
               v = settings.returnMutator(v);
             }
             resolve(v);
           };
-          prom(resolveExt, reject)
+          prom(resolveExt, reject);
 
         }
 
@@ -58,7 +58,7 @@ var Medusa = (function() {
       return new Promise(function(resolve, reject) {
 
         // Re-put the object no matter what
-        let resolveExt = (v) => {
+        var resolveExt = function(v) {
           md.put(key, v, policy);
           if (settings.returnMutator) {
             v = settings.returnMutator(v);
@@ -109,7 +109,7 @@ var Medusa = (function() {
 
       // Clear a wildcard search of objects
       if (key.indexOf('*') > -1) {
-        var cacheMatchKeys = Object.keys(cache).filter((str) => {
+        var cacheMatchKeys = Object.keys(cache).filter(function(str) {
           return new RegExp('^' + key.split('*').join('.*') + '$').test(str);
         });
         cacheMatchKeys.forEach(md._clear);
@@ -123,7 +123,7 @@ var Medusa = (function() {
     },
 
     // Internal clear to bypass extra checking of the key
-    _clear(key) {
+    _clear: function(key) {
       // Clear a single item, making sure to remove the extra timeout
       if (hOP.call(cache, key)) {
         if (cache[key].to) {
