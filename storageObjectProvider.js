@@ -2,8 +2,7 @@ var storage = window.localStorage;
 var storageCache = {
 
   init: function() {
-    // This should be used to update the cache on boot,
-    // memory cache will be blank on boot by default
+    // TODO: This should load up the existing local storage items and setup callbacks
     return;
   },
 
