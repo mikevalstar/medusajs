@@ -7,9 +7,13 @@ var Medusa = (function() {
   var settings = {
     debug: false,
     returnMutator: false,
+    defaultProvider: 'memory',
   };
 
-  var md = {
+  var medusaCore = {
+
+    // Placeholder for cache providers
+    providers: {},
 
     // Alter settings for Medusa
     settings: function(newSettings) {
@@ -22,10 +26,42 @@ var Medusa = (function() {
       return settings;
     },
 
+    // Add a provider
+    addProvider: function(name, provider) {
+      provider.init(); // Trigger for provider to clear any old cache items or any other cleanup
+      medusaCore.providers[name] = provider;
+    },
+
     // Allows you to get from the cache or pull from the promise
     get: function(key, prom, policy) {
 
-      return new Promise(function(resolve, reject) {
+      var prov = medusaCore.providers[settings.defaultProvider];
+
+      return prov.get(key, prom, policy)
+        .then(function(val) {
+          if (settings.returnMutator) {
+            return settings.returnMutator(val);
+          }
+
+          return val;
+        })
+        .catch(function() {
+          return new Promise(function(resolve, reject) {
+
+            // The cached item does not exist, resolve, store and return
+            var resolveExt = function(v) {
+              medusaCore.put(key, v, policy);
+              if (settings.returnMutator) {
+                v = settings.returnMutator(v);
+              }
+              resolve(v);
+            };
+            prom(resolveExt, reject);
+
+          });
+        });
+
+      /*return new Promise(function(resolve, reject) {
 
         if (hOP.call(cache, key)) {
           // The cached item exists, return it immediatly
@@ -37,8 +73,8 @@ var Medusa = (function() {
 
         } else {
           // The cached item does not exist, resolve and return
-          var resolveExt = (v) => {
-            md.put(key, v, policy);
+          var resolveExt = function(v) {
+            medusaCore.put(key, v, policy);
             if (settings.returnMutator) {
               v = settings.returnMutator(v);
             }
@@ -48,7 +84,7 @@ var Medusa = (function() {
 
         }
 
-      });
+      });*/
 
     },
 
@@ -59,7 +95,7 @@ var Medusa = (function() {
 
         // Re-put the object no matter what
         var resolveExt = function(v) {
-          md.put(key, v, policy);
+          medusaCore.put(key, v, policy);
           if (settings.returnMutator) {
             v = settings.returnMutator(v);
           }
@@ -75,13 +111,13 @@ var Medusa = (function() {
     put: function(key, value, policy) {
 
       // Clear in case it exists
-      md.clear(key);
+      medusaCore.clear(key);
 
       // Set a timemout to self-remove from the cache if in policy
       var to = false;
       if (policy && parseInt(policy) > 0) {
         to = setTimeout(function() {
-          md.clear(key);
+          medusaCore.clear(key);
         }, parseInt(policy));
       }
 
@@ -101,7 +137,7 @@ var Medusa = (function() {
       if (!key) {
         for (var i in cache) {
           if (hOP.call(cache, i)) {
-            md._clear(i);
+            medusaCore._clear(i);
           }
         }
         return true;
@@ -112,13 +148,13 @@ var Medusa = (function() {
         var cacheMatchKeys = Object.keys(cache).filter(function(str) {
           return new RegExp('^' + key.split('*').join('.*') + '$').test(str);
         });
-        cacheMatchKeys.forEach(md._clear);
+        cacheMatchKeys.forEach(medusaCore._clear);
         // Incase someone somehow used a wildcard in their cached key (don't do this)
-        return cacheMatchKeys.length > 0 || md._clear(key);
+        return cacheMatchKeys.length > 0 || medusaCore._clear(key);
       }
 
       // Not a special clear
-      return md._clear(key);
+      return medusaCore._clear(key);
 
     },
 
@@ -139,7 +175,56 @@ var Medusa = (function() {
 
   };
 
-  return md;
+  // Memory cache is about the simplist cache possible, use it as an example
+  var memoryCache = {
+
+    init: function() {
+      // This should be used to update the cache on boot,
+      // memory cache will be blank on boot by default
+      return;
+    },
+
+    get: function(key, policy, callback) {
+      // Gets the value as a promise, will resolve on found, will reject if not found
+      return new Promise(function(resolve, reject) {
+
+        if (hOP.call(cache, key)) {
+          // The cached item exists, return it
+          resolve(cache[key].val);
+        } else {
+          // The cached item does not exist reject
+          reject();
+        }
+
+      });
+
+    },
+
+    set: function(key, value, prom) {
+      // Sets the value, returns a promise when the storage is complete
+    },
+
+    keys: function() {
+      // Return all keys for the storage
+    },
+
+    _hasKey: function(key) {
+
+    },
+
+    clear: function(key) {
+      // Clears a single key or complete clear on empty
+    },
+
+    _clear: function(key) {
+      // Clears a single key
+    },
+
+  };
+
+  medusaCore.addProvider('memory', memoryCache);
+
+  return medusaCore;
 
 })();
 
