@@ -124,7 +124,7 @@ var Medusa = (function() {
       return;
     },
 
-    get: function(key, policy, callback) {
+    get: function(key, policy) {
       // Gets the value as a promise, will resolve on found, will reject if not found
       return new Promise(function(resolve, reject) {
 

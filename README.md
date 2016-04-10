@@ -67,7 +67,7 @@ Bypass the get function and store an object directly into the cache.
 
 ### clear = function(key)
 
-Clear a cached item, if no key is set all items will be cleared. Returns true if an item was cleared.
+Clear a cached item, if no key is set all items will be cleared. Returns a promise that will resolve to true if successful, or an array of booleans for each key;
 
 _You may also clear cache items using a wildcard characters e.g. Medusa.clear('sample*')_
 
