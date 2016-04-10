@@ -61,31 +61,6 @@ var Medusa = (function() {
           });
         });
 
-      /*return new Promise(function(resolve, reject) {
-
-        if (hOP.call(cache, key)) {
-          // The cached item exists, return it immediatly
-          if (settings.returnMutator) {
-            resolve(settings.returnMutator(cache[key].val));
-          } else {
-            resolve(cache[key].val);
-          }
-
-        } else {
-          // The cached item does not exist, resolve and return
-          var resolveExt = function(v) {
-            medusaCore.put(key, v, policy);
-            if (settings.returnMutator) {
-              v = settings.returnMutator(v);
-            }
-            resolve(v);
-          };
-          prom(resolveExt, reject);
-
-        }
-
-      });*/
-
     },
 
     // Allows you to get from the cache or pull from the promise
@@ -109,68 +84,29 @@ var Medusa = (function() {
 
     // Place an item into the cache
     put: function(key, value, policy) {
-
-      // Clear in case it exists
-      medusaCore.clear(key);
-
-      // Set a timemout to self-remove from the cache if in policy
-      var to = false;
-      if (policy && parseInt(policy) > 0) {
-        to = setTimeout(function() {
-          medusaCore.clear(key);
-        }, parseInt(policy));
-      }
-
-      // Store the cached item
-      cache[key] = {
-        policy: policy,
-        val: value,
-        to: to,
-      };
-
+      var prov = medusaCore.providers[settings.defaultProvider];
+      prov.set(key, value, policy);
     },
 
     // Clear one or all items in the cache
     clear: function(key) {
 
-      // Clear all items in the cache
-      if (!key) {
-        for (var i in cache) {
-          if (hOP.call(cache, i)) {
-            medusaCore._clear(i);
-          }
-        }
-        return true;
-      }
+      var prov = medusaCore.providers[settings.defaultProvider];
 
       // Clear a wildcard search of objects
-      if (key.indexOf('*') > -1) {
+      if (key && key.indexOf('*') > -1) {
         var cacheMatchKeys = Object.keys(cache).filter(function(str) {
           return new RegExp('^' + key.split('*').join('.*') + '$').test(str);
         });
-        cacheMatchKeys.forEach(medusaCore._clear);
+
+        cacheMatchKeys.forEach(prov.clear);
         // Incase someone somehow used a wildcard in their cached key (don't do this)
-        return cacheMatchKeys.length > 0 || medusaCore._clear(key);
+        return cacheMatchKeys.length > 0 || prov.clear(key);
       }
 
       // Not a special clear
-      return medusaCore._clear(key);
+      return prov.clear(key);
 
-    },
-
-    // Internal clear to bypass extra checking of the key
-    _clear: function(key) {
-      // Clear a single item, making sure to remove the extra timeout
-      if (hOP.call(cache, key)) {
-        if (cache[key].to) {
-          clearTimeout(cache[key].to);
-        }
-
-        delete cache[key];
-        return true;
-      }
-
-      return false;
     },
 
   };
@@ -200,24 +136,56 @@ var Medusa = (function() {
 
     },
 
-    set: function(key, value, prom) {
+    set: function(key, value, policy) {
       // Sets the value, returns a promise when the storage is complete
+      // Clear in case it exists
+      memoryCache.clear(key);
+
+      // Set a timemout to self-remove from the cache if in policy
+      var to = false;
+      if (policy && parseInt(policy) > 0) {
+        to = setTimeout(function() {
+          memoryCache.clear(key);
+        }, parseInt(policy));
+      }
+
+      // Store the cached item
+      cache[key] = {
+        policy: policy,
+        val: value,
+        to: to,
+      };
     },
 
     keys: function() {
       // Return all keys for the storage
     },
 
-    _hasKey: function(key) {
-
-    },
-
     clear: function(key) {
       // Clears a single key or complete clear on empty
+      // Clear all items in the cache
+      if (!key) {
+        for (var i in cache) {
+          memoryCache._clear(i);
+        }
+        return true;
+      }
+
+      return memoryCache._clear(key);
     },
 
     _clear: function(key) {
-      // Clears a single key
+      // Clear a single item, making sure to remove the extra timeout
+      if (hOP.call(cache, key)) {
+        if (cache[key].to) {
+          clearTimeout(cache[key].to);
+        }
+
+        delete cache[key];
+        return true;
+      }
+
+      return false;
     },
 
   };
