@@ -70,11 +70,12 @@ var Medusa = (function() {
 
         // Re-put the object no matter what
         var resolveExt = function(v) {
-          medusaCore.put(key, v, policy);
-          if (settings.returnMutator) {
-            v = settings.returnMutator(v);
-          }
-          resolve(v);
+          medusaCore.put(key, v, policy).then(function(val) {
+            if (settings.returnMutator) {
+              v = settings.returnMutator(val);
+            }
+            resolve(val);
+          });
         };
         prom(resolveExt, reject)
 
@@ -140,29 +141,34 @@ var Medusa = (function() {
     },
 
     set: function(key, value, policy) {
-      // Sets the value, returns a promise when the storage is complete
+      // Sets the value, returns a promise when the storage is complete, promise will resolve to the value
       // Clear in case it exists
-      memoryCache.clear(key);
+      return memoryCache.clear(key)
+        .then(function() {
 
-      // Set a timemout to self-remove from the cache if in policy
-      var to = false;
-      if (policy && parseInt(policy) > 0) {
-        to = setTimeout(function() {
-          memoryCache.clear(key);
-        }, parseInt(policy));
-      }
+          // Set a timemout to self-remove from the cache if in policy
+          var to = false;
+          if (policy && parseInt(policy) > 0) {
+            to = setTimeout(function() {
+              memoryCache.clear(key);
+            }, parseInt(policy));
+          }
 
-      // Store the cached item
-      cache[key] = {
-        policy: policy,
-        val: value,
-        to: to,
-      };
+          // Store the cached item
+          cache[key] = {
+            policy: policy,
+            val: value,
+            to: to,
+          };
+
+          return value;
+
+        });
     },
 
     keys: function() {
+      // Return all keys for the storage as a promise
       return new Promise(function(resolve, reject) {
-        // Return all keys for the storage
         resolve(Object.keys(cache));
       });
     },
