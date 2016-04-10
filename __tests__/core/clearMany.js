@@ -1,5 +1,5 @@
-jest.unmock('../index');
-import Medusa from '../index';
+jest.unmock('../../index');
+import Medusa from '../../index';
 
 describe('Clear many from storage', () => {
 

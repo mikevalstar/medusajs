@@ -1,6 +1,6 @@
-jest.unmock('../index');
+jest.unmock('../../index');
 jest.unmock('lodash.clonedeep');
-import Medusa from '../index';
+import Medusa from '../../index';
 import cloneDeep from 'lodash.clonedeep';
 
 describe('object mutation', () => {
