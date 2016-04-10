@@ -37,7 +37,7 @@ var Medusa = (function() {
 
         } else {
           // The cached item does not exist, resolve and return
-          var resolveExt = (v) => {
+          var resolveExt = function(v) {
             md.put(key, v, policy);
             if (settings.returnMutator) {
               v = settings.returnMutator(v);
