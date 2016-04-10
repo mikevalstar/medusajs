@@ -85,7 +85,7 @@ var Medusa = (function() {
     // Place an item into the cache
     put: function(key, value, policy) {
       var prov = medusaCore.providers[settings.defaultProvider];
-      prov.set(key, value, policy);
+      return prov.set(key, value, policy);
     },
 
     // Clear one or all items in the cache
@@ -95,13 +95,16 @@ var Medusa = (function() {
 
       // Clear a wildcard search of objects
       if (key && key.indexOf('*') > -1) {
-        var cacheMatchKeys = prov.keys().filter(function(str) {
-          return new RegExp('^' + key.split('*').join('.*') + '$').test(str);
-        });
+        return prov.keys().then(function(keys) {
+          var cacheMatchKeys = keys.filter(function(str) {
+            return new RegExp('^' + key.split('*').join('.*') + '$').test(str);
+          });
 
-        cacheMatchKeys.forEach(prov.clear);
-        // Incase someone somehow used a wildcard in their cached key (don't do this)
-        return cacheMatchKeys.length > 0 || prov.clear(key);
+          var clearPromises = cacheMatchKeys.map(prov.clear);
+          // Incase someone somehow used a wildcard in their cached key (don't do this)
+          clearPromises.push(prov.clear(key));
+          return Promise.all(clearPromises);
+        });
       }
 
       // Not a special clear
@@ -158,21 +161,25 @@ var Medusa = (function() {
     },
 
     keys: function() {
-      // Return all keys for the storage
-      return Object.keys(cache);
+      return new Promise(function(resolve, reject) {
+        // Return all keys for the storage
+        resolve(Object.keys(cache));
+      });
     },
 
     clear: function(key) {
-      // Clears a single key or complete clear on empty
-      // Clear all items in the cache
-      if (!key) {
-        for (var i in cache) {
-          memoryCache._clear(i);
+      return new Promise(function(resolve, reject) {
+        // Clears a single key or complete clear on empty
+        // Clear all items in the cache
+        if (!key) {
+          for (var i in cache) {
+            memoryCache._clear(i);
+          }
+          resolve(true);
         }
-        return true;
-      }
 
-      return memoryCache._clear(key);
+        resolve(memoryCache._clear(key));
+      });
     },
 
     _clear: function(key) {
