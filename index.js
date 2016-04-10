@@ -124,7 +124,7 @@ var Medusa = (function() {
       return;
     },
 
-    get: function(key, policy) {
+    get: function(key) {
       // Gets the value as a promise, will resolve on found, will reject if not found
       return new Promise(function(resolve, reject) {
 
@@ -133,7 +133,7 @@ var Medusa = (function() {
           resolve(cache[key].val);
         } else {
           // The cached item does not exist reject
-          reject();
+          reject(false);
         }
 
       });
