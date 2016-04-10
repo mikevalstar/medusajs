@@ -95,7 +95,7 @@ var Medusa = (function() {
 
       // Clear a wildcard search of objects
       if (key && key.indexOf('*') > -1) {
-        var cacheMatchKeys = Object.keys(cache).filter(function(str) {
+        var cacheMatchKeys = prov.keys().filter(function(str) {
           return new RegExp('^' + key.split('*').join('.*') + '$').test(str);
         });
 
@@ -159,6 +159,7 @@ var Medusa = (function() {
 
     keys: function() {
       // Return all keys for the storage
+      return Object.keys(cache);
     },
 
     clear: function(key) {
