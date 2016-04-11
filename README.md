@@ -3,12 +3,15 @@ A Promise based caching library for node or the browser.
 
 Pass in a cache key, a promise executor and optionally a cache length and get back a cached object.
 
+Medusa supports
+* Memory storage
+* Local / session storage
+
 ## Installation
 
     npm install medusajs
 
 ## Usage
-
 
 ```javascript
 var Medusa = require('medusajs');
@@ -38,7 +41,6 @@ cache miss
 example
 example
 example */
-
 ```
 
 ## API
@@ -77,3 +79,13 @@ Send in an updated settings object:
 
 * debug: _will output logging_
 * returnMutator: _a function to mutate the return value for output (good for using something like lodash.cloneDeep)_
+
+## Alternate Storage Engines
+
+```javascript
+var Medusa = require('medusajs');
+var storageCache = require('medusajs/storageObjectProvider');
+storageCache.setStorage(window.sessionStorage);
+
+Medusa.addProvider('session', storageCache);
+```

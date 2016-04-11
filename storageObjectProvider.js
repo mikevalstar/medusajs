@@ -2,8 +2,37 @@ var storage = window.localStorage;
 var storageCache = {
 
   init: function() {
-    // TODO: This should load up the existing local storage items and setup callbacks
-    return;
+    // This should load up the existing local storage items and setup timed removals
+    return new Promise(function(resolve, reject) {
+
+      // Promises for all the set data
+      var dataProms = [];
+
+      // Loop through the storage data and attempt to parse each
+      for (var i = 0; i < storage.length; i++) {
+        var key = storage.key(i);
+        var value = storage.getItem(key);
+        try {
+          value = JSON.parse(value);
+          // It will have a false if its a forever object
+          if (value && value.policy) {
+            var dtn = new Date();
+
+            var diff = Date.parse(value.policy) - dtn.getTime();
+
+            if (diff > 0) {
+              dataProms.push(storageCache.set(key, value.val, diff));
+            } else {
+              storage.removeItem(key);
+            }
+          }
+        } catch (e) {
+          // Ignore exceptions, comment is for IE and empty blocks
+          // we dont throw because it was probably stored by something else
+        }
+      }
+      Promise.all(dataProms).then(resolve);
+    });
   },
 
   setStorage: function(engine) {
@@ -16,9 +45,13 @@ var storageCache = {
       var value = storage.getItem(key);
 
       if (value) {
-        value = JSON.parse(value);
-        // The cached item exists, return it
-        resolve(value.val);
+        try {
+          value = JSON.parse(value);
+          // The cached item exists, return it
+          resolve(value.val);
+        } catch (e) {
+          reject(false);
+        }
       } else {
         // The cached item does not exist reject
         reject(false);

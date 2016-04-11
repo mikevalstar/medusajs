@@ -3,7 +3,7 @@ import storageObjectProvider from '../../storageObjectProvider';
 import MockLocalStorage from 'mock-localstorage';
 var mockStorage = new MockLocalStorage();
 storageObjectProvider.setStorage(mockStorage);
-storageObjectProvider.init(); // Simulates
+storageObjectProvider.init(); // Initiate storage object
 
 describe('memoryCache storage', () => {
 
@@ -81,6 +81,40 @@ describe('memoryCache storage', () => {
         return storageObjectProvider.get('sample8')
           .then(res => expect(res).toEqual('success'))
           .catch(res => expect(false).toEqual(true));
+      });
+
+  });
+
+  pit('cache expires after we re-load', () => {
+
+    return storageObjectProvider.set('sample9', 'success', 1000)
+      .then(res => {
+        // Fast-forward until all timers have been executed
+        jest.clearAllTimers();
+        jest.runAllTimers();
+      })
+      .then(res => {
+        storageObjectProvider.get('sample9')
+          .then(res => expect(res).toEqual('success'));
+        return true;
+      })
+      .then(res => {
+        // Fast-forward until all timers have been executed
+        return storageObjectProvider.init();
+      })
+      .then(res => {
+        storageObjectProvider.get('sample9')
+          .then(res => expect(res).toEqual('success'));
+        return true;
+      })
+      .then(res => {
+        // Fast-forward until all timers have been executed
+        jest.runAllTimers();
+      })
+      .then(res => {
+        storageObjectProvider.get('sample9')
+          .catch(res => expect(res).toEqual(false));
+        return true;
       });
 
   });
