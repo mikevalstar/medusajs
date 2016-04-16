@@ -13,6 +13,7 @@ var Medusa = (function() {
   var policyMaker = (incPolicy) => {
     var outPolicy = {
       expiry: false,
+      provider: settings.defaultProvider,
     };
 
     // Blank policy, false, or no policy. lets store forever
@@ -22,7 +23,8 @@ var Medusa = (function() {
 
     // Type is a full policy object
     if (typeof incPolicy == 'object' && incPolicy.expiry) {
-      outPolicy = incPolicy;
+      outPolicy.expiry = incPolicy.expiry;
+      outPolicy.provider = incPolicy.provider || outPolicy.provider;
     } else {
       outPolicy.expiry = incPolicy;
     }
@@ -64,9 +66,10 @@ var Medusa = (function() {
     // Allows you to get from the cache or pull from the promise
     get: function(key, prom, policy) {
 
-      var prov = medusaCore.providers[settings.defaultProvider];
+      policy = policyMaker(policy);
+      var prov = medusaCore.providers[policy.provider];
 
-      return prov.get(key, prom, policyMaker(policy))
+      return prov.get(key, prom, policy)
         .then(function(val) {
           if (settings.returnMutator) {
             return settings.returnMutator(val);
@@ -79,7 +82,7 @@ var Medusa = (function() {
 
             // The cached item does not exist, resolve, store and return
             var resolveExt = function(v) {
-              medusaCore.put(key, v, policyMaker(policy));
+              medusaCore.put(key, v, policy);
               if (settings.returnMutator) {
                 v = settings.returnMutator(v);
               }
@@ -114,14 +117,15 @@ var Medusa = (function() {
 
     // Place an item into the cache
     put: function(key, value, policy) {
-      var prov = medusaCore.providers[settings.defaultProvider];
-      return prov.set(key, value, policyMaker(policy));
+      policy = policyMaker(policy);
+      var prov = medusaCore.providers[policy.provider];
+      return prov.set(key, value, policy);
     },
 
     // Clear one or all items in the cache
-    clear: function(key) {
+    clear: function(key, provider) {
 
-      var prov = medusaCore.providers[settings.defaultProvider];
+      var prov = medusaCore.providers[provider || settings.defaultProvider];
 
       // Clear a wildcard search of objects
       if (key && key.indexOf('*') > -1) {

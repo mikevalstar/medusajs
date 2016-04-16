@@ -67,9 +67,9 @@ The policy value will set the duration of the cache, if no policy is set the obj
 
 Bypass the get function and store an object directly into the cache.
 
-### clear = function(key)
+### clear = function(key, provider)
 
-Clear a cached item, if no key is set all items will be cleared. Returns a promise that will resolve to true if successful, or an array of booleans for each key;
+Clear a cached item, if no key is set all items will be cleared. Returns a promise that will resolve to true if successful, or an array of booleans for each key; if provider is not specified it will clear the default provider only.
 
 _You may also clear cache items using a wildcard characters e.g. Medusa.clear('sample*')_
 
@@ -105,13 +105,13 @@ If you have something more complex you would like to do with the policy, you can
 
 #### Properties
 * `expiry`: Date or amount of seconds you would like the cache to expire (**required** but may be set to false)
-* `extendOnGet`: Wether or not to extend the cache time if the item is found in the cache
+* `provider`: Specify the provider to use (default: 'memory')
 
 #### Example
 ```javascript
 Medusa.get('sample', resolver, {
   expiry: 1000,
-  extendOnGet: true,
+  provider: 'memory',
 }).then(res => { console.log(res); });
 ```
 
