@@ -22,7 +22,7 @@ var Medusa = (function() {
     }
 
     // Type is a full policy object
-    if (typeof incPolicy == 'object' && incPolicy.expiry) {
+    if (typeof incPolicy === 'object' && incPolicy.expiry) {
       outPolicy.expiry = incPolicy.expiry;
       outPolicy.provider = incPolicy.provider || outPolicy.provider;
     } else {
@@ -109,7 +109,7 @@ var Medusa = (function() {
             resolve(val);
           });
         };
-        prom(resolveExt, reject)
+        prom(resolveExt, reject);
 
       });
 
@@ -201,13 +201,13 @@ var Medusa = (function() {
 
     keys: function() {
       // Return all keys for the storage as a promise
-      return new Promise(function(resolve, reject) {
+      return new Promise(function(resolve) {
         resolve(Object.keys(cache));
       });
     },
 
     clear: function(key) {
-      return new Promise(function(resolve, reject) {
+      return new Promise(function(resolve) {
         // Clears a single key or complete clear on empty
         // Clear all items in the cache
         if (!key) {

@@ -1,20 +1,27 @@
 {
+"parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "script",
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "arrowFunctions": true,
+      "blockBindings": true,
+      "classes": true,
+      "destructuring": true,
+      "forOf": true,
+      "templateStrings": true,
+      "restParams": true,
+      "spread": true,
+      "objectLiteralShorthandMethods": true,
+      "objectLiteralShorthandProperties": true,
+      "objectLiteralComputedProperties": true
+    }
+  },
   "env": {
     "browser": true,
     "node": true,
-  },
-  "ecmaFeatures": {
-    "arrowFunctions": true,
-    "blockBindings": true,
-    "classes": true,
-    "destructuring": true,
-    "forOf": true,
-    "templateStrings": true,
-    "restParams": true,
-    "spread": true,
-    "objectLiteralShorthandMethods": true,
-    "objectLiteralShorthandProperties": true,
-    "objectLiteralComputedProperties": true,
+    "jest": true,
+    "es6": true,
   },
   "rules": {
     "block-scoped-var": 2,
