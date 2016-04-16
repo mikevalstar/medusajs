@@ -10,6 +10,35 @@ var Medusa = (function() {
     defaultProvider: 'memory',
   };
 
+  var policyMaker = (incPolicy) => {
+    var outPolicy = {
+      expiry: false,
+    };
+
+    // Blank policy, false, or no policy. lets store forever
+    if (!incPolicy) {
+      return outPolicy;
+    }
+
+    // Type is a full policy object
+    if (typeof incPolicy == 'object' && incPolicy.expiry) {
+      outPolicy = incPolicy;
+    } else {
+      outPolicy.expiry = incPolicy;
+    }
+
+    // Date object parsing
+    if (outPolicy.expiry.getTime) {
+      var d = new Date();
+      outPolicy.expiry = Math.ceil((outPolicy.expiry.getTime() - d.getTime()) / 1000);
+    }
+
+    // Number is too small, negative or not a number
+    outPolicy.expiry = parseInt(outPolicy.expiry) > 0 ? parseInt(outPolicy.expiry) : false;
+
+    return outPolicy;
+  };
+
   var medusaCore = {
 
     // Placeholder for cache providers
@@ -37,7 +66,7 @@ var Medusa = (function() {
 
       var prov = medusaCore.providers[settings.defaultProvider];
 
-      return prov.get(key, prom, policy)
+      return prov.get(key, prom, policyMaker(policy))
         .then(function(val) {
           if (settings.returnMutator) {
             return settings.returnMutator(val);
@@ -50,7 +79,7 @@ var Medusa = (function() {
 
             // The cached item does not exist, resolve, store and return
             var resolveExt = function(v) {
-              medusaCore.put(key, v, policy);
+              medusaCore.put(key, v, policyMaker(policy));
               if (settings.returnMutator) {
                 v = settings.returnMutator(v);
               }
@@ -70,7 +99,7 @@ var Medusa = (function() {
 
         // Re-put the object no matter what
         var resolveExt = function(v) {
-          medusaCore.put(key, v, policy).then(function(val) {
+          medusaCore.put(key, v, policyMaker(policy)).then(function(val) {
             if (settings.returnMutator) {
               v = settings.returnMutator(val);
             }
@@ -86,7 +115,7 @@ var Medusa = (function() {
     // Place an item into the cache
     put: function(key, value, policy) {
       var prov = medusaCore.providers[settings.defaultProvider];
-      return prov.set(key, value, policy);
+      return prov.set(key, value, policyMaker(policy));
     },
 
     // Clear one or all items in the cache
@@ -148,10 +177,10 @@ var Medusa = (function() {
 
           // Set a timemout to self-remove from the cache if in policy
           var to = false;
-          if (policy && parseInt(policy) > 0) {
+          if (policy && policy.expiry && policy.expiry > 0) {
             to = setTimeout(function() {
               memoryCache.clear(key);
-            }, parseInt(policy));
+            }, policy.expiry);
           }
 
           // Store the cached item

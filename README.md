@@ -80,6 +80,41 @@ Send in an updated settings object:
 * debug: _will output logging_
 * returnMutator: _a function to mutate the return value for output (good for using something like lodash.cloneDeep)_
 
+## Policies
+
+### Simple Policy
+
+The simplest policy is to simply set a duration, pass in any integer and the object will be cached for that many seconds.
+
+```javascript
+Medusa.get('sample', resolver, 1000).then(res => { console.log(res); });
+```
+
+### Date Policy
+
+If you have a specific date and time you would like a cache item to expire, you can pass in a date object
+
+```javascript
+var midnight = new Date();
+midnight.setHours(24,0,0,0); // midnight
+Medusa.get('sample', resolver, midnight).then(res => { console.log(res); });
+```
+
+### Complex Policy
+If you have something more complex you would like to do with the policy, you can pass in an object with your specifications.
+
+#### Properties
+* `expiry`: Date or amount of seconds you would like the cache to expire (**required** but may be set to false)
+* `extendOnGet`: Wether or not to extend the cache time if the item is found in the cache
+
+#### Example
+```javascript
+Medusa.get('sample', resolver, {
+  expiry: 1000,
+  extendOnGet: true,
+}).then(res => { console.log(res); });
+```
+
 ## Alternate Storage Engines
 
 ```javascript

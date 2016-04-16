@@ -69,12 +69,12 @@ var storageCache = {
 
         // Set a timemout to self-remove from the cache if in policy
         var to = false;
-        if (policy && parseInt(policy) > 0) {
+        if (policy && policy.expiry && policy.expiry > 0) {
           to = setTimeout(function() {
             storageCache.clear(key);
-          }, parseInt(policy));
+          }, policy.expiry);
 
-          policy = new Date(Date.now() + parseInt(policy));
+          policy = new Date(Date.now() + policy.expiry);
         } else {
           policy = false;
         }

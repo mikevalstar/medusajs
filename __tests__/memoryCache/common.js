@@ -2,18 +2,25 @@ jest.unmock('../../index');
 import Medusa from '../../index';
 var memoryCache = Medusa.providers.memory;
 
+
+var policy = () => {
+  return {
+    expiry: 1000,
+  };
+};
+
 describe('memoryCache storage', () => {
 
   pit('set an object', () => {
 
-    return memoryCache.set('sample1', 'success', 1000)
+    return memoryCache.set('sample1', 'success', policy())
       .then(res => expect(res).toEqual('success'));
 
   });
 
   pit('set and gets an object', () => {
 
-    return memoryCache.set('sample2', 'success', 1000)
+    return memoryCache.set('sample2', 'success', policy())
       .then(() => { return memoryCache.get('sample2'); })
       .then(res => expect(res).toEqual('success'));
 
@@ -29,7 +36,7 @@ describe('memoryCache storage', () => {
 
   pit('clear an object and have it be gone', () => {
 
-    return memoryCache.set('sample4', 'success', 1000)
+    return memoryCache.set('sample4', 'success', policy())
       .then(() => { return memoryCache.get('sample4'); })
       .then(res => expect(res).toEqual('success'))
       .then(() => { return memoryCache.clear('sample4'); })
@@ -41,7 +48,7 @@ describe('memoryCache storage', () => {
 
   pit('clear all objects and have it be gone', () => {
 
-    return memoryCache.set('sample5', 'success', 1000)
+    return memoryCache.set('sample5', 'success', policy())
       .then(() => { return memoryCache.get('sample5'); })
       .then(res => expect(res).toEqual('success'))
       .then(() => { return memoryCache.clear(); })
@@ -53,7 +60,7 @@ describe('memoryCache storage', () => {
 
   pit('can get all the keys', () => {
 
-    return memoryCache.set('sample6', 'success', 1000)
+    return memoryCache.set('sample6', 'success', policy())
       .then(() => { return memoryCache.keys(); })
       .then(res => expect(res).toContain('sample6'));
 
@@ -61,7 +68,7 @@ describe('memoryCache storage', () => {
 
   pit('cache expires', () => {
 
-    return memoryCache.set('sample7', 'success', 1000)
+    return memoryCache.set('sample7', 'success', policy())
       .then(res => {
         return memoryCache.set('sample8', 'success')
       })
