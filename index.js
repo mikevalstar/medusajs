@@ -10,7 +10,7 @@ var Medusa = (function() {
     defaultProvider: 'memory',
   };
 
-  var policyMaker = (incPolicy) => {
+  var policyMaker = function(incPolicy) {
     var outPolicy = {
       expiry: false,
       provider: settings.defaultProvider,
