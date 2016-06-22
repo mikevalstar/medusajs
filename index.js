@@ -3,6 +3,7 @@
 var Medusa = (function() {
 
   var cache = {};
+  var currentTasks = {};
   var hOP = cache.hasOwnProperty;
   var settings = {
     debug: false,
@@ -78,6 +79,22 @@ var Medusa = (function() {
           return val;
         })
         .catch(function() {
+
+          if (hOP.call(currentTasks, key)) {
+            // Add to the current task
+            var concurent = new Promise(function(resolve, reject) {
+              currentTasks[key].push({
+                res: resolve,
+                rej: reject,
+              });
+            });
+
+            return concurent;
+          }else{
+            // Add current task to list
+            currentTasks[key] = [];
+          }
+
           return new Promise(function(resolve, reject) {
 
             // The cached item does not exist, resolve, store and return
@@ -87,8 +104,27 @@ var Medusa = (function() {
                 v = settings.returnMutator(v);
               }
               resolve(v);
+
+              if (hOP.call(currentTasks, key)) {
+                for (var i in currentTasks[key]) {
+                  currentTasks[key][i].res(v);
+                }
+                delete currentTasks[key];
+              }
             };
-            prom(resolveExt, reject);
+
+            var rejectExt = function(v){
+              reject(v);
+
+              if (hOP.call(currentTasks, key)) {
+                for (var i in currentTasks[key]) {
+                  currentTasks[key][i].rej(v);
+                }
+                delete currentTasks[key];
+              }
+            };
+
+            prom(resolveExt, rejectExt);
 
           });
         });
