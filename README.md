@@ -84,7 +84,7 @@ Send in an updated settings object:
 
 ### Simple Policy
 
-The simplest policy is to simply set a duration, pass in any integer and the object will be cached for that many seconds.
+The simplest policy is to simply set a duration, pass in any integer and the object will be cached for that many miliseconds.
 
 ```javascript
 Medusa.get('sample', resolver, 1000).then(res => { console.log(res); });
@@ -104,7 +104,7 @@ Medusa.get('sample', resolver, midnight).then(res => { console.log(res); });
 If you have something more complex you would like to do with the policy, you can pass in an object with your specifications.
 
 #### Properties
-* `expiry`: Date or amount of seconds you would like the cache to expire (**required** but may be set to false)
+* `expiry`: Date or amount of miliseconds you would like the cache to expire (**required** but may be set to false)
 * `provider`: Specify the provider to use (default: 'memory')
 
 #### Example
@@ -124,3 +124,8 @@ storageCache.setStorage(window.sessionStorage);
 
 Medusa.addProvider('session', storageCache);
 ```
+
+## More
+
+### Concurrency
+as of MedusaJS v1.1.0 if you request 2 calls at the same time, the resolver will only resolve once no matter how long the resolver takes. Making a slow API call will now only call the API once even if you request the information more then once in a short period.
