@@ -3,7 +3,7 @@ import Medusa from '../../index';
 
 describe('basic storage', () => {
 
-  pit('gets the results of a promise, Date Policy', (resolve, reject) => {
+  pit('gets the results of a promise, Date Policy', (resolveFinal, reject) => {
 
     var x = new Date();
     x = new Date(x.getTime() + 1000 * 1000);
@@ -12,6 +12,7 @@ describe('basic storage', () => {
       resolve('success');
     }, x)
     .then(res => expect(res).toEqual('success'))
+    .then(() => { resolveFinal(); })
     .catch(() => {
       reject();
     });
@@ -20,7 +21,7 @@ describe('basic storage', () => {
 
   pit('cache expires', () => {
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolveFinal, reject) => {
 
       var x = new Date();
       x = new Date(x.getTime() + 1000 * 1000);
@@ -30,7 +31,6 @@ describe('basic storage', () => {
       }, x)
       .then(res => expect(res).toEqual('failure'))
       .then(res => {
-
         expect(setTimeout.mock.calls.length).toBe(1);
         expect(setTimeout.mock.calls[0][1]).toBe(1000);
 
@@ -39,13 +39,12 @@ describe('basic storage', () => {
 
       })
       .then(res => {
-
         Medusa.get('datesample2', function(resolve, reject) {
           resolve('success');
         }, 1000)
         .then(res => {
           expect(res).toEqual('success');
-          resolve();
+          resolveFinal();
         });
 
       }).catch(() => {
