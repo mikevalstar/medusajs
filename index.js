@@ -82,7 +82,7 @@ var Medusa = (function() {
         })
         .catch(function() {
 
-          if (hOP.call(currentTasks, key)) {
+          if (hOP.call(currentTasks, key) && Array.isArray(currentTasks[key]) && currentTasks[key].length > 0) {
             // Add to the current task, but ignore if any items is below retry anyway threshold
             var oldQueue = false;
             for (var i in currentTasks[key]){
