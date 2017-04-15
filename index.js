@@ -122,6 +122,7 @@ var Medusa = (function() {
                     currentTasks[key][i].res(v);
                   }
                 }
+                currentTasks[key] = [];
                 delete currentTasks[key];
               }
             };
@@ -135,6 +136,7 @@ var Medusa = (function() {
                     currentTasks[key][i].rej(v);
                   }
                 }
+                currentTasks[key] = [];
                 delete currentTasks[key];
               }
             };
