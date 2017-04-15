@@ -103,7 +103,7 @@ var Medusa = (function() {
             }
           }else{
             // Add current task to list
-            currentTasks[key] = [];
+            currentTasks[key] = [{queued: new Date()}];
           }
 
           return new Promise(function(resolve, reject) {
@@ -118,7 +118,9 @@ var Medusa = (function() {
 
               if (hOP.call(currentTasks, key)) {
                 for (var i in currentTasks[key]) {
-                  currentTasks[key][i].res(v);
+                  if(currentTasks[key][i].res){
+                    currentTasks[key][i].res(v);
+                  }
                 }
                 delete currentTasks[key];
               }
@@ -129,7 +131,9 @@ var Medusa = (function() {
 
               if (hOP.call(currentTasks, key)) {
                 for (var i in currentTasks[key]) {
-                  currentTasks[key][i].rej(v);
+                  if(currentTasks[key][i].rej){
+                    currentTasks[key][i].rej(v);
+                  }
                 }
                 delete currentTasks[key];
               }

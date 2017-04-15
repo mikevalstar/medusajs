@@ -1,6 +1,6 @@
 {
   "name": "medusajs",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "a promise based caching library",
   "main": "index.js",
   "scripts": {

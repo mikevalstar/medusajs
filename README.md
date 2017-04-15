@@ -78,6 +78,7 @@ _You may also clear cache items using a wildcard characters e.g. Medusa.clear('s
 Send in an updated settings object:
 
 * debug: _will output logging_
+* retry: _will allow for the concurrency queue to be bypassed after this interval, default: 5000_
 * returnMutator: _a function to mutate the return value for output (good for using something like lodash.cloneDeep)_
 
 ## Policies
