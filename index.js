@@ -5,10 +5,12 @@ var Medusa = (function() {
   var cache = {};
   var currentTasks = {};
   var hOP = cache.hasOwnProperty;
+
   var settings = {
     debug: false,
     returnMutator: false,
     defaultProvider: 'memory',
+    retry: 5000,
   };
 
   var policyMaker = function(incPolicy) {
@@ -81,15 +83,24 @@ var Medusa = (function() {
         .catch(function() {
 
           if (hOP.call(currentTasks, key)) {
-            // Add to the current task
-            var concurent = new Promise(function(resolve, reject) {
-              currentTasks[key].push({
-                res: resolve,
-                rej: reject,
+            // Add to the current task, but ignore if any items is below retry anyway threshold
+            var oldQueue = false;
+            for (var i in currentTasks[key]){
+              if(currentTasks[key][i].queued < new Date(Date.now() - settings.retry)){
+                oldQueue = true;
+              }
+            }
+            if(!oldQueue){
+              var concurent = new Promise(function(resolve, reject) {
+                currentTasks[key].push({
+                  res: resolve,
+                  rej: reject,
+                  queued: new Date(),
+                });
               });
-            });
 
-            return concurent;
+              return concurent;
+            }
           }else{
             // Add current task to list
             currentTasks[key] = [];
