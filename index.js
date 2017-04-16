@@ -214,7 +214,7 @@ var Medusa = (function() {
       // Gets the value as a promise, will resolve on found, will reject if not found
       return new Promise(function(resolve, reject) {
 
-        if (hOP.call(cache, key)) {
+        if (hOP.call(cache, key) && cache[key].val) {
           // The cached item exists, return it
           resolve(cache[key].val);
         } else {
@@ -281,6 +281,7 @@ var Medusa = (function() {
           clearTimeout(cache[key].to);
         }
 
+        cache[key] = null;
         delete cache[key];
         return true;
       }
