@@ -3,7 +3,7 @@ import Medusa from '../../index';
 
 describe('handle bad user input', () => {
 
-  pit('cache does not expire with a bad policy', () => {
+  it('cache does not expire with a bad policy', () => {
 
     return new Promise(resolve => {
 
@@ -24,7 +24,7 @@ describe('handle bad user input', () => {
         }, 'this is not valid!')
         .then(res => {
           expect(res).toEqual('success');
-          resolve(); // Resolve pit
+          resolve(); // Resolve it
         });
 
       });

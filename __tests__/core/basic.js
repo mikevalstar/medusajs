@@ -25,7 +25,7 @@ describe('settings', () => {
 
 describe('basic storage', () => {
 
-  pit('gets the results of a promise', () => {
+  it('gets the results of a promise', () => {
 
     return Medusa.get('sample1', function(resolve, reject) {
       resolve('success');
@@ -34,7 +34,7 @@ describe('basic storage', () => {
 
   });
 
-  pit('returns old value, not new value for promise', () => {
+  it('returns old value, not new value for promise', () => {
 
     return new Promise(resolve => {
 
@@ -58,7 +58,7 @@ describe('basic storage', () => {
 
   });
 
-  pit('overwtires the current cache item', () => {
+  it('overwtires the current cache item', () => {
 
     return new Promise(resolve => {
 
@@ -82,14 +82,15 @@ describe('basic storage', () => {
 
   });
 
-  pit('cache expires', () => {
-
-    return new Promise(resolve => {
+  it('cache expires', () => {
+    return new Promise(resolveP => {
 
       Medusa.get('sample3', function(resolve, reject) {
         resolve('failure');
       }, 1000)
-      .then(res => expect(res).toEqual('failure'))
+      .then(res => {
+        expect(res).toEqual('failure')
+      })
       .then(res => {
 
         // Fast-forward until all timers have been executed
@@ -103,7 +104,7 @@ describe('basic storage', () => {
         }, 1000)
         .then(res => {
           expect(res).toEqual('success');
-          resolve();
+          resolveP();
         });
 
       });
@@ -112,7 +113,7 @@ describe('basic storage', () => {
 
   });
 
-  pit('rejects and does not cache', () => {
+  it('rejects and does not cache', () => {
 
     return new Promise(resolve => {
 
@@ -137,7 +138,7 @@ describe('basic storage', () => {
 
   });
 
-  pit('clears all cache items', () => {
+  it('clears all cache items', () => {
 
     return new Promise(resolve => {
 
@@ -161,7 +162,7 @@ describe('basic storage', () => {
 
   });
 
-  pit('clears a single item that has a permenant cache', () => {
+  it('clears a single item that has a permenant cache', () => {
 
     return new Promise(resolve => {
 

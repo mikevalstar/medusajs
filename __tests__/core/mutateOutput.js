@@ -5,7 +5,7 @@ import cloneDeep from 'lodash.clonedeep';
 
 describe('object mutation', () => {
 
-  pit('adds a mutator then uses it', () => {
+  it('adds a mutator then uses it', () => {
 
     Medusa.settings({
       returnMutator: cloneDeep,
@@ -24,7 +24,7 @@ describe('object mutation', () => {
 
   });
 
-  pit('adds a mutator then uses it on overwrite', () => {
+  it('adds a mutator then uses it on overwrite', () => {
 
     Medusa.settings({
       returnMutator: cloneDeep,

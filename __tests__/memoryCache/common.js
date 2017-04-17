@@ -11,14 +11,14 @@ var policy = () => {
 
 describe('memoryCache storage', () => {
 
-  pit('set an object', () => {
+  it('set an object', () => {
 
     return memoryCache.set('sample1', 'success', policy())
       .then(res => expect(res).toEqual('success'));
 
   });
 
-  pit('set and gets an object', () => {
+  it('set and gets an object', () => {
 
     return memoryCache.set('sample2', 'success', policy())
       .then(() => { return memoryCache.get('sample2'); })
@@ -26,7 +26,7 @@ describe('memoryCache storage', () => {
 
   });
 
-  pit('gets an object thats not there', () => {
+  it('gets an object thats not there', () => {
 
     return memoryCache.get('sample3')
       .then(res => expect(false).toEqual(true))
@@ -34,7 +34,7 @@ describe('memoryCache storage', () => {
 
   });
 
-  pit('clear an object and have it be gone', () => {
+  it('clear an object and have it be gone', () => {
 
     return memoryCache.set('sample4', 'success', policy())
       .then(() => { return memoryCache.get('sample4'); })
@@ -46,7 +46,7 @@ describe('memoryCache storage', () => {
 
   });
 
-  pit('clear all objects and have it be gone', () => {
+  it('clear all objects and have it be gone', () => {
 
     return memoryCache.set('sample5', 'success', policy())
       .then(() => { return memoryCache.get('sample5'); })
@@ -58,7 +58,7 @@ describe('memoryCache storage', () => {
 
   });
 
-  pit('can get all the keys', () => {
+  it('can get all the keys', () => {
 
     return memoryCache.set('sample6', 'success', policy())
       .then(() => { return memoryCache.keys(); })
@@ -66,7 +66,7 @@ describe('memoryCache storage', () => {
 
   });
 
-  pit('cache expires', () => {
+  it('cache expires', () => {
 
     return memoryCache.set('sample7', 'success', policy())
       .then(res => {

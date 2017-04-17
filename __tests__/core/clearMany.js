@@ -3,7 +3,7 @@ import Medusa from '../../index';
 
 describe('Clear many from storage', () => {
 
-  pit('gets the results of a promise', () => {
+  it('gets the results of a promise', () => {
 
     return Medusa.get('clearMany1', function(resolve, reject) {
       resolve('success');
@@ -37,7 +37,7 @@ describe('Clear many from storage', () => {
 
 describe('Clear many from storage that dont exist', () => {
 
-  pit('gets the results of a promise', () => {
+  it('gets the results of a promise', () => {
 
     return Medusa.get('clearMany3', function(resolve, reject) {
       resolve('success');

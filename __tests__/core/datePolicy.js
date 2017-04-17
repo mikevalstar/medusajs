@@ -1,9 +1,9 @@
 jest.unmock('../../index');
 import Medusa from '../../index';
 
-describe('basic storage', () => {
+describe('basic storage - date policy', () => {
 
-  pit('gets the results of a promise, Date Policy', (resolveFinal, reject) => {
+  it('gets the results of a promise, Date Policy', (resolveFinal, reject) => {
 
     var x = new Date();
     x = new Date(x.getTime() + 1000 * 1000);
@@ -19,10 +19,11 @@ describe('basic storage', () => {
 
   });
 
-  pit('cache expires', () => {
+  it('cache expires', () => {
 
     return new Promise((resolveFinal, reject) => {
 
+      var startingTimers = setTimeout.mock.calls.length;
       var x = new Date();
       x = new Date(x.getTime() + 1000 * 1000);
 
@@ -31,12 +32,11 @@ describe('basic storage', () => {
       }, x)
       .then(res => expect(res).toEqual('failure'))
       .then(res => {
-        expect(setTimeout.mock.calls.length).toBe(1);
+        expect(setTimeout.mock.calls.length).toBe(startingTimers + 1);
         expect(setTimeout.mock.calls[0][1]).toBe(1000);
 
         // Fast-forward until all timers have been executed
         jest.runAllTimers();
-
       })
       .then(res => {
         Medusa.get('datesample2', function(resolve, reject) {
@@ -47,7 +47,7 @@ describe('basic storage', () => {
           resolveFinal();
         });
 
-      }).catch(() => {
+      }).catch((e) => {
         reject();
       });
 
